@@ -1,46 +1,55 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Book a Service</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookEasy � Book a Shuttle Court</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; margin: 0; background: #f4f6f8; color: #333; }
+    header, footer { background: #2c3e50; color: white; text-align: center; padding: 1.5rem; }
+    main { max-width: 600px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h2 { margin-top: 0; }
+    label { display: block; margin-top: 1rem; }
+    input, select { width: 100%; padding: 0.5rem; margin-top: 0.5rem; border: 1px solid #ccc; border-radius: 5px; }
+    button { margin-top: 1.5rem; padding: 0.75rem 1.5rem; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #1a252f; }
+  </style>
 </head>
 <body>
-  <h1>Book a Service</h1>
-  <form id="bookingForm">
-    <input type="text" name="userName" placeholder="Your Name" required />
-    <input type="date" name="date" required />
-    <input type="time" name="time" required />
-    <select name="service">
-      <option value="shuttle">Shuttle Court</option>
-      <option value="hotel">Hotel Table</option>
-    </select>
-    <button type="submit">Book Now</button>
-  </form>
+  <header>
+    <h1>BookEasy</h1>
+    <p>Book a Shuttle Court</p>
+  </header>
 
-  <script>
-    const firebaseConfig = {
-      // paste your Firebase config here
-    };
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+  <main>
+    <h2>Reserve Your Slot</h2>
+    <form>
+      <label for="name">Full Name</label>
+      <input type="text" id="name" required />
 
-    document.getElementById("bookingForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = new FormData(e.target);
-      await db.collection("bookings").add({
-        userName: data.get("userName"),
-        date: data.get("date"),
-        time: data.get("time"),
-        service: data.get("service"),
-        createdAt: new Date()
-      });
-      alert("Booking confirmed!");
-      e.target.reset();
-    });
-  </script>
+      <label for="email">Email</label>
+      <input type="email" id="email" required />
+
+      <label for="date">Date</label>
+      <input type="date" id="date" required />
+
+      <label for="time">Time Slot</label>
+      <select id="time" required>
+        <option value="">Select a time</option>
+        <option>6:00 AM � 7:00 AM</option>
+        <option>7:00 AM � 8:00 AM</option>
+        <option>5:00 PM � 6:00 PM</option>
+        <option>6:00 PM � 7:00 PM</option>
+      </select>
+
+      <button type="submit">Confirm Booking</button>
+    </form>
+  </main>
+
+  <footer>
+    &copy; 2025 BookEasy. All rights reserved.
+  </footer>
 </body>
 </html>
-
