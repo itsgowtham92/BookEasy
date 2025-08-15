@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book a Service</title>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+</head>
+<body>
+  <h1>Book a Service</h1>
+  <form id="bookingForm">
+    <input type="text" name="userName" placeholder="Your Name" required />
+    <input type="date" name="date" required />
+    <input type="time" name="time" required />
+    <select name="service">
+      <option value="shuttle">Shuttle Court</option>
+      <option value="hotel">Hotel Table</option>
+    </select>
+    <button type="submit">Book Now</button>
+  </form>
+
+  <script>
+    const firebaseConfig = {
+      // paste your Firebase config here
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = new FormData(e.target);
+      await db.collection("bookings").add({
+        userName: data.get("userName"),
+        date: data.get("date"),
+        time: data.get("time"),
+        service: data.get("service"),
+        createdAt: new Date()
+      });
+      alert("Booking confirmed!");
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
