@@ -1,730 +1,109 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookEasy - Multi-Service Booking Platform</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .booking-calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-        }
-        .time-slot {
-            transition: all 0.2s ease;
-        }
-        .time-slot:hover {
-            background-color: #e5e7eb;
-        }
-        .time-slot.selected {
-            background-color: #3b82f6;
-            color: white;
-        }
-        .time-slot.booked {
-            background-color: #ef4444;
-            color: white;
-            cursor: not-allowed;
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .stats-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-        .revenue-card {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        .bookings-card {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        }
-    </style>
-    <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyC1GRBCJ5FD5kDKz_vnbqovRsb2PTXhNqE",
-    authDomain: "bookeasy-89802.firebaseapp.com",
-    projectId: "bookeasy-89802",
-    storageBucket: "bookeasy-89802.firebasestorage.app",
-    messagingSenderId: "1088095790468",
-    appId: "1:1088095790468:web:6a0a49c3cb646fc34069d1"
-  };
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookEasy � Shuttle Court Booking</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      color: #333;
+    }
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    .intro {
+      padding: 2rem;
+      text-align: center;
+    }
+    .intro p {
+      max-width: 600px;
+      margin: auto;
+      font-size: 1.1rem;
+    }
+    .main-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin: 2rem auto;
+      max-width: 800px;
+      overflow: hidden;
+    }
+    .main-card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+    .main-card-content {
+      padding: 2rem;
+      text-align: center;
+    }
+    .main-card-content h2 {
+      margin-top: 0;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .buttons a {
+      background: #2c3e50;
+      color: white;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+    .buttons a:hover {
+      background: #1a252f;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #eaeaea;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-lg fixed w-full z-50">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <i class="fas fa-calendar-check text-2xl text-indigo-600 mr-3"></i>
-                    <span class="text-xl font-bold text-gray-800">BookEasy</span>
-                </div>
-                <div class="hidden md:flex space-x-6">
-                    <button onclick="showSection('home')" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md">Home</button>
-                    <a href="booking.html" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md">Book Now</a>
-                    <a href="owner.html" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md">For Owners</a>
-                    <a href="dashboard.html" class="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md">Admin</a>
-                </div>
-                <div class="flex space-x-2">
-                    <button onclick="showLoginModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Login</button>
-                    <button onclick="showSignupModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300">Sign Up</button>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body>
+  <header>
+    <h1>BookEasy</h1>
+    <p>Seamless Shuttle Court Booking Platform</p>
+  </header>
 
-    <!-- Home Section -->
-    <section id="home" class="pt-16">
-        <!-- Hero Section -->
-        <div class="gradient-bg text-white py-20">
-            <div class="max-w-7xl mx-auto px-4 text-center">
-                <h1 class="text-5xl font-bold mb-6">The Ultimate Booking Platform</h1>
-                <p class="text-xl mb-8 max-w-3xl mx-auto">Connect service providers with customers. Manage shuttle courts, hotel tables, sports facilities, and more with our comprehensive booking solution.</p>
-                <div class="flex justify-center space-x-4">
-                    <button onclick="showSection('customer')" class="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100">Start Booking</button>
-                    <button onclick="showSection('owner')" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600">Become an Owner</button>
-                </div>
-            </div>
-        </div>
+  <section class="intro">
+    <p>Welcome to BookEasy, your one-stop solution for managing and booking shuttle courts. Whether you're a court owner or a player, we've got the tools to make your experience smooth and efficient.</p>
+  </section>
 
-        <!-- Features Section -->
-        <div class="py-20 bg-white">
-            <div class="max-w-7xl mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center text-gray-800 mb-16">Why Choose BookEasy?</h2>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="text-center card-hover bg-gray-50 p-8 rounded-xl">
-                        <i class="fas fa-users text-4xl text-indigo-600 mb-4"></i>
-                        <h3 class="text-xl font-bold mb-4">Dual Platform</h3>
-                        <p class="text-gray-600">Seamlessly serves both service providers and customers with intuitive interfaces for each user type.</p>
-                    </div>
-                    <div class="text-center card-hover bg-gray-50 p-8 rounded-xl">
-                        <i class="fas fa-credit-card text-4xl text-green-600 mb-4"></i>
-                        <h3 class="text-xl font-bold mb-4">Commission Model</h3>
-                        <p class="text-gray-600">Transparent commission structure with automatic payment processing and revenue sharing.</p>
-                    </div>
-                    <div class="text-center card-hover bg-gray-50 p-8 rounded-xl">
-                        <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
-                        <h3 class="text-xl font-bold mb-4">Analytics & Growth</h3>
-                        <p class="text-gray-600">Comprehensive analytics dashboard to track bookings, revenue, and business growth.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Services Section -->
-        <div class="py-20 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center text-gray-800 mb-16">Supported Services</h2>
-                <div class="grid md:grid-cols-4 gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-md card-hover text-center">
-                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/86ad8311-5a02-442c-b200-58000bcf7023.png" alt="Modern badminton shuttle court with professional lighting and wooden flooring" class="w-full h-32 object-cover rounded-lg mb-4">
-                        <h3 class="font-bold text-lg">Shuttle Courts</h3>
-                        <p class="text-gray-600 text-sm">Badminton & Tennis Courts</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md card-hover text-center">
-                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3c6894e9-f513-4228-bd03-2bdc0ed90bdb.png" alt="Elegant hotel restaurant dining table setup with white tablecloth and fine dining arrangement" class="w-full h-32 object-cover rounded-lg mb-4">
-                        <h3 class="font-bold text-lg">Hotel Tables</h3>
-                        <p class="text-gray-600 text-sm">Restaurant & Dining</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md card-hover text-center">
-                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ce400953-990f-4619-a517-9d8d2d0d49eb.png" alt="Modern fitness gym with state-of-the-art equipment and bright lighting" class="w-full h-32 object-cover rounded-lg mb-4">
-                        <h3 class="font-bold text-lg">Fitness Centers</h3>
-                        <p class="text-gray-600 text-sm">Gyms & Training</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md card-hover text-center">
-                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c7fe9217-8d15-4943-bcc7-923445d00921.png" alt="Professional conference room with large table, modern chairs, and presentation screen" class="w-full h-32 object-cover rounded-lg mb-4">
-                        <h3 class="font-bold text-lg">Meeting Rooms</h3>
-                        <p class="text-gray-600 text-sm">Conference & Events</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Customer Section -->
-    <section id="customer" class="pt-16 hidden">
-        <div class="max-w-7xl mx-auto px-4 py-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-8">Find & Book Services</h1>
-            
-            <!-- Search and Filters -->
-            <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-                <div class="grid md:grid-cols-4 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Service Type</label>
-                        <select class="w-full p-3 border border-gray-300 rounded-lg">
-                            <option>All Services</option>
-                            <option>Shuttle Courts</option>
-                            <option>Hotel Tables</option>
-                            <option>Fitness Centers</option>
-                            <option>Meeting Rooms</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                        <input type="text" placeholder="Enter location" class="w-full p-3 border border-gray-300 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                        <input type="date" class="w-full p-3 border border-gray-300 rounded-lg">
-                    </div>
-                    <div class="flex items-end">
-                        <button class="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700">
-                            <i class="fas fa-search mr-2"></i>Search
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Available Services -->
-            <div class="grid md:grid-cols-3 gap-6" id="servicesList">
-                <!-- Service cards will be populated by JavaScript -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Owner Section -->
-    <section id="owner" class="pt-16 hidden">
-        <div class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Subscription Plans -->
-            <div class="text-center mb-12">
-                <h1 class="text-4xl font-bold text-gray-800 mb-4">Choose Your Subscription Plan</h1>
-                <p class="text-xl text-gray-600">Start growing your business with BookEasy</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8 mb-16">
-                <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
-                    <h3 class="text-2xl font-bold text-center mb-4">Starter</h3>
-                    <div class="text-center mb-6">
-                        <span class="text-4xl font-bold">$29</span>
-                        <span class="text-gray-600">/month</span>
-                    </div>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Up to 50 bookings/month</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Basic analytics</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Email support</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>5% commission per booking</li>
-                    </ul>
-                    <button onclick="selectPlan('starter')" class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300">Choose Plan</button>
-                </div>
-
-                <div class="bg-white p-8 rounded-xl shadow-lg card-hover border-4 border-indigo-500 relative">
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-indigo-500 text-white px-4 py-1 rounded-full text-sm">Most Popular</div>
-                    <h3 class="text-2xl font-bold text-center mb-4">Professional</h3>
-                    <div class="text-center mb-6">
-                        <span class="text-4xl font-bold">$79</span>
-                        <span class="text-gray-600">/month</span>
-                    </div>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Up to 200 bookings/month</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Advanced analytics</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Priority support</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>3% commission per booking</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Custom branding</li>
-                    </ul>
-                    <button onclick="selectPlan('professional')" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">Choose Plan</button>
-                </div>
-
-                <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
-                    <h3 class="text-2xl font-bold text-center mb-4">Enterprise</h3>
-                    <div class="text-center mb-6">
-                        <span class="text-4xl font-bold">$199</span>
-                        <span class="text-gray-600">/month</span>
-                    </div>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Unlimited bookings</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>Full analytics suite</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>24/7 phone support</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>2% commission per booking</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>API access</li>
-                        <li class="flex items-center"><i class="fas fa-check text-green-500 mr-3"></i>White-label solution</li>
-                    </ul>
-                    <button onclick="selectPlan('enterprise')" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700">Choose Plan</button>
-                </div>
-            </div>
-
-            <!-- Owner Dashboard -->
-            <div id="ownerDashboard" class="hidden">
-                <div class="grid md:grid-cols-4 gap-6 mb-8">
-                    <div class="stats-card text-white p-6 rounded-xl">
-                        <h3 class="text-lg font-semibold mb-2">Total Revenue</h3>
-                        <p class="text-3xl font-bold">₹1,04,580</p>
-                        <p class="text-sm opacity-80">+15% from last month</p>
-                    </div>
-                    <div class="revenue-card text-white p-6 rounded-xl">
-                        <h3 class="text-lg font-semibold mb-2">Total Bookings</h3>
-                        <p class="text-3xl font-bold">284</p>
-                        <p class="text-sm opacity-80">+22% from last month</p>
-                    </div>
-                    <div class="bookings-card text-white p-6 rounded-xl">
-                        <h3 class="text-lg font-semibold mb-2">Active Slots</h3>
-                        <p class="text-3xl font-bold">42</p>
-                        <p class="text-sm opacity-80">Across all services</p>
-                    </div>
-                    <div class="bg-gray-800 text-white p-6 rounded-xl">
-                        <h3 class="text-lg font-semibold mb-2">Commission Paid</h3>
-                        <p class="text-3xl font-bold">$623</p>
-                        <p class="text-sm opacity-80">This month</p>
-                    </div>
-                </div>
-
-                <!-- Add New Service -->
-                <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-                    <h3 class="text-xl font-bold mb-4">Add New Service Slot</h3>
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Service Type</label>
-                            <select id="serviceType" class="w-full p-3 border border-gray-300 rounded-lg">
-                                <option>Shuttle Court</option>
-                                <option>Hotel Table</option>
-                                <option>Fitness Center</option>
-                                <option>Meeting Room</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Price per Hour</label>
-                            <input type="number" id="servicePrice" placeholder="25" class="w-full p-3 border border-gray-300 rounded-lg">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Available Hours</label>
-                            <input type="text" id="serviceHours" placeholder="9:00 AM - 9:00 PM" class="w-full p-3 border border-gray-300 rounded-lg">
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <textarea id="serviceDescription" rows="3" placeholder="Describe your service..." class="w-full p-3 border border-gray-300 rounded-lg"></textarea>
-                    </div>
-                    <button onclick="addService()" class="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700">
-                        <i class="fas fa-plus mr-2"></i>Add Service
-                    </button>
-                </div>
-
-                <!-- Recent Bookings -->
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h3 class="text-xl font-bold mb-4">Recent Bookings</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b">
-                                    <th class="text-left py-2">Customer</th>
-                                    <th class="text-left py-2">Service</th>
-                                    <th class="text-left py-2">Date & Time</th>
-                                    <th class="text-left py-2">Amount</th>
-                                    <th class="text-left py-2">Commission</th>
-                                    <th class="text-left py-2">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recentBookings">
-                                <!-- Bookings will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Admin Section -->
-    <section id="admin" class="pt-16 hidden">
-        <div class="max-w-7xl mx-auto px-4 py-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-8">Admin Dashboard</h1>
-
-            <!-- Admin Stats -->
-            <div class="grid md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-green-500 text-white p-6 rounded-xl">
-                    <h3 class="text-lg font-semibold mb-2">Total Revenue</h3>
-                    <p class="text-3xl font-bold">$45,230</p>
-                    <p class="text-sm opacity-80">Platform earnings</p>
-                </div>
-                <div class="bg-blue-500 text-white p-6 rounded-xl">
-                    <h3 class="text-lg font-semibold mb-2">Active Owners</h3>
-                    <p class="text-3xl font-bold">127</p>
-                    <p class="text-sm opacity-80">Paying subscribers</p>
-                </div>
-                <div class="bg-purple-500 text-white p-6 rounded-xl">
-                    <h3 class="text-lg font-semibold mb-2">Total Bookings</h3>
-                    <p class="text-3xl font-bold">2,384</p>
-                    <p class="text-sm opacity-80">This month</p>
-                </div>
-                <div class="bg-orange-500 text-white p-6 rounded-xl">
-                    <h3 class="text-lg font-semibold mb-2">Commission Earned</h3>
-                    <p class="text-3xl font-bold">$8,920</p>
-                    <p class="text-sm opacity-80">This month</p>
-                </div>
-            </div>
-
-            <!-- Commission Settings -->
-            <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-                <h3 class="text-xl font-bold mb-4">Commission Settings</h3>
-                <div class="grid md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Starter Plan Commission (%)</label>
-                        <input type="number" value="5" class="w-full p-3 border border-gray-300 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Professional Plan Commission (%)</label>
-                        <input type="number" value="3" class="w-full p-3 border border-gray-300 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Enterprise Plan Commission (%)</label>
-                        <input type="number" value="2" class="w-full p-3 border border-gray-300 rounded-lg">
-                    </div>
-                </div>
-                <button class="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700">Update Commission Rates</button>
-            </div>
-
-            <!-- Recent Transactions -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="text-xl font-bold mb-4">Recent Transactions</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b">
-                                <th class="text-left py-2">Owner</th>
-                                <th class="text-left py-2">Service</th>
-                                <th class="text-left py-2">Booking Amount</th>
-                                <th class="text-left py-2">Commission Rate</th>
-                                <th class="text-left py-2">Commission Earned</th>
-                                <th class="text-left py-2">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminTransactions">
-                            <!-- Transactions will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-        <div class="bg-white p-8 rounded-xl max-w-md w-full mx-4">
-            <h2 class="text-2xl font-bold mb-6">Login</h2>
-            <form>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" class="w-full p-3 border border-gray-300 rounded-lg">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input type="password" class="w-full p-3 border border-gray-300 rounded-lg">
-                </div>
-                <div class="flex space-x-4">
-                    <button type="button" onclick="closeModal('loginModal')" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300">Cancel</button>
-                    <button type="submit" class="flex-1 bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">Login</button>
-                </div>
-            </form>
-        </div>
+  <section class="main-card">
+    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/86ad8311-5a02-442c-b200-58000bcf7023.png" alt="Shuttle Court">
+    <div class="main-card-content">
+      <h2>Book Your Shuttle Court Now</h2>
+      <p>Choose your preferred time slot, location, and court type. Fast, easy, and reliable booking for all shuttle enthusiasts.</p>
+      <div class="buttons">
+        <a href="booking.html">Book a Court</a>
+        <a href="owner.html">Court Owner Portal</a>
+        <a href="dashboard.html">View Dashboard</a>
+      </div>
     </div>
+  </section>
 
-    <!-- Signup Modal -->
-    <div id="signupModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-        <div class="bg-white p-8 rounded-xl max-w-md w-full mx-4">
-            <h2 class="text-2xl font-bold mb-6">Sign Up</h2>
-            <form>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">User Type</label>
-                    <select class="w-full p-3 border border-gray-300 rounded-lg">
-                        <option>Customer</option>
-                        <option>Service Owner</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                    <input type="text" class="w-full p-3 border border-gray-300 rounded-lg">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" class="w-full p-3 border border-gray-300 rounded-lg">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input type="password" class="w-full p-3 border border-gray-300 rounded-lg">
-                </div>
-                <div class="flex space-x-4">
-                    <button type="button" onclick="closeModal('signupModal')" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300">Cancel</button>
-                    <button type="submit" class="flex-1 bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">Sign Up</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Booking Modal -->
-    <div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-        <div class="bg-white p-8 rounded-xl max-w-lg w-full mx-4">
-            <h2 class="text-2xl font-bold mb-6">Book Service</h2>
-            <div id="bookingContent">
-                <!-- Booking content will be populated by JavaScript -->
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Sample data
-        const services = [
-            {
-                id: 1,
-                type: 'Shuttle Court',
-                name: 'Premium Badminton Court A1',
-                location: 'Downtown Sports Complex',
-                price: 499,
-                rating: 4.8,
-                image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/8d681d70-2861-4154-8e00-26afde49d513.png',
-                imageAlt: 'Modern badminton court with professional lighting, wooden flooring, and net setup',
-                owner: 'SportZone LLC',
-                available: true
-            },
-            {
-                id: 2,
-                type: 'Hotel Table',
-                name: 'Elegant Dining Table for 4',
-                location: 'Grand Hotel Restaurant',
-                price: 799,
-                rating: 4.9,
-                image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3f7a0da9-84e2-479e-a102-c1edc606f9fe.png',
-                imageAlt: 'Luxury restaurant table with white tablecloth, elegant place settings, and ambient lighting',
-                owner: 'Grand Hotels Inc',
-                available: true
-            },
-            {
-                id: 3,
-                type: 'Fitness Center',
-                name: 'Premium Gym Session',
-                location: 'FitLife Gym',
-                price: 299,
-                rating: 4.7,
-                image: 'https://placehold.co/400x250',
-                imageAlt: 'Modern fitness center with cardio equipment, weight machines, and mirrors',
-                owner: 'FitLife Corporation',
-                available: true
-            },
-            {
-                id: 4,
-                type: 'Meeting Room',
-                name: 'Conference Room Pro',
-                location: 'Business Center Plaza',
-                price: 60,
-                rating: 4.6,
-                image: 'https://placehold.co/400x250',
-                imageAlt: 'Professional conference room with large oval table, leather chairs, and presentation screen',
-                owner: 'BizSpace Co',
-                available: true
-            }
-        ];
-
-        // Navigation functions
-        function showSection(sectionName) {
-            const sections = ['home', 'customer', 'owner', 'admin'];
-            sections.forEach(section => {
-                document.getElementById(section).classList.add('hidden');
-            });
-            document.getElementById(sectionName).classList.remove('hidden');
-            
-            if (sectionName === 'customer') {
-                loadServices();
-            } else if (sectionName === 'admin') {
-                loadAdminData();
-            }
-        }
-
-        // Modal functions
-        function showLoginModal() {
-            document.getElementById('loginModal').classList.remove('hidden');
-        }
-
-        function showSignupModal() {
-            document.getElementById('signupModal').classList.remove('hidden');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        // Owner subscription functions
-        function selectPlan(planType) {
-            alert(`You selected the ${planType} plan! Redirecting to payment...`);
-            document.getElementById('ownerDashboard').classList.remove('hidden');
-            loadOwnerData();
-        }
-
-        // Load services for customers
-        function loadServices() {
-            const servicesList = document.getElementById('servicesList');
-            servicesList.innerHTML = services.map(service => `
-                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
-                    <img src="${service.image}" alt="${service.imageAlt}" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-semibold">${service.type}</span>
-                            <div class="flex items-center">
-                                <i class="fas fa-star text-yellow-500 mr-1"></i>
-                                <span class="text-sm text-gray-600">${service.rating}</span>
-                            </div>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">${service.name}</h3>
-                        <p class="text-gray-600 mb-2"><i class="fas fa-map-marker-alt mr-2"></i>${service.location}</p>
-                        <p class="text-gray-600 mb-4">by ${service.owner}</p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-2xl font-bold text-indigo-600">$${service.price}/hr</span>
-                            <button onclick="bookService(${service.id})" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Book Now</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Book service function
-        function bookService(serviceId) {
-            const service = services.find(s => s.id === serviceId);
-            const timeSlots = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
-            
-            document.getElementById('bookingContent').innerHTML = `
-                <div class="mb-4">
-                    <h3 class="text-lg font-bold">${service.name}</h3>
-                    <p class="text-gray-600">${service.location}</p>
-                    <p class="text-xl font-bold text-indigo-600">$${service.price}/hour</p>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
-                    <input type="date" class="w-full p-3 border border-gray-300 rounded-lg">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Time</label>
-                    <div class="grid grid-cols-4 gap-2">
-                        ${timeSlots.map(time => `
-                            <button class="time-slot p-2 border border-gray-300 rounded text-sm hover:bg-indigo-50" 
-                                    onclick="selectTimeSlot(this, '${time}')">${time}</button>
-                        `).join('')}
-                    </div>
-                </div>
-                <div class="flex space-x-4">
-                    <button onclick="closeModal('bookingModal')" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300">Cancel</button>
-                    <button onclick="confirmBooking(${serviceId})" class="flex-1 bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700">Confirm Booking</button>
-                </div>
-            `;
-            document.getElementById('bookingModal').classList.remove('hidden');
-        }
-
-        // Time slot selection
-        function selectTimeSlot(button, time) {
-            document.querySelectorAll('.time-slot').forEach(slot => {
-                slot.classList.remove('selected');
-            });
-            button.classList.add('selected');
-        }
-
-        // Confirm booking
-        function confirmBooking(serviceId) {
-            const service = services.find(s => s.id === serviceId);
-            const selectedSlot = document.querySelector('.time-slot.selected');
-            
-            if (!selectedSlot) {
-                alert('Please select a time slot');
-                return;
-            }
-            
-            alert(`Booking confirmed for ${service.name} at ${selectedSlot.textContent}! Total: $${service.price}`);
-            closeModal('bookingModal');
-        }
-
-        // Owner functions
-        function addService() {
-            const type = document.getElementById('serviceType').value;
-            const price = document.getElementById('servicePrice').value;
-            const hours = document.getElementById('serviceHours').value;
-            const description = document.getElementById('serviceDescription').value;
-            
-            if (!price || !hours || !description) {
-                alert('Please fill all fields');
-                return;
-            }
-            
-            alert(`New ${type} service added successfully! Price: $${price}/hour`);
-            
-            // Clear form
-            document.getElementById('servicePrice').value = '';
-            document.getElementById('serviceHours').value = '';
-            document.getElementById('serviceDescription').value = '';
-        }
-
-        function loadOwnerData() {
-            const bookings = [
-                { customer: 'John Smith', service: 'Badminton Court A1', datetime: '2024-01-15 10:00 AM', amount: '$25', commission: '$1.25', status: 'Completed' },
-                { customer: 'Sarah Wilson', service: 'Dining Table #4', datetime: '2024-01-15 7:00 PM', amount: '$45', commission: '$2.25', status: 'Confirmed' },
-                { customer: 'Mike Johnson', service: 'Gym Session', datetime: '2024-01-16 6:00 AM', amount: '$15', commission: '$0.75', status: 'Pending' }
-            ];
-
-            document.getElementById('recentBookings').innerHTML = bookings.map(booking => `
-                <tr class="border-b">
-                    <td class="py-2">${booking.customer}</td>
-                    <td class="py-2">${booking.service}</td>
-                    <td class="py-2">${booking.datetime}</td>
-                    <td class="py-2">${booking.amount}</td>
-                    <td class="py-2">${booking.commission}</td>
-                    <td class="py-2">
-                        <span class="px-2 py-1 rounded-full text-xs ${
-                            booking.status === 'Completed' ? 'bg-green-100 text-green-800' :
-                            booking.status === 'Confirmed' ? 'bg-blue-100 text-blue-800' :
-                            'bg-yellow-100 text-yellow-800'
-                        }">${booking.status}</span>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Admin functions
-        function loadAdminData() {
-            const transactions = [
-                { owner: 'SportZone LLC', service: 'Badminton Court', amount: '$25', rate: '5%', commission: '$1.25', date: '2024-01-15' },
-                { owner: 'Grand Hotels Inc', service: 'Dining Table', amount: '$45', rate: '3%', commission: '$1.35', date: '2024-01-15' },
-                { owner: 'FitLife Corporation', service: 'Gym Session', amount: '$15', rate: '5%', commission: '$0.75', date: '2024-01-16' },
-                { owner: 'BizSpace Co', service: 'Meeting Room', amount: '$60', rate: '2%', commission: '$1.20', date: '2024-01-16' }
-            ];
-
-            document.getElementById('adminTransactions').innerHTML = transactions.map(transaction => `
-                <tr class="border-b">
-                    <td class="py-2">${transaction.owner}</td>
-                    <td class="py-2">${transaction.service}</td>
-                    <td class="py-2">${transaction.amount}</td>
-                    <td class="py-2">${transaction.rate}</td>
-                    <td class="py-2 font-bold text-green-600">${transaction.commission}</td>
-                    <td class="py-2">${transaction.date}</td>
-                </tr>
-            `).join('');
-        }
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            showSection('home');
-        });
-
-        // Close modals when clicking outside
-        window.addEventListener('click', function(e) {
-            if (e.target.classList.contains('fixed') && e.target.classList.contains('inset-0')) {
-                e.target.classList.add('hidden');
-            }
-        });
-    </script>
+  <footer>
+    &copy; 2025 BookEasy. All rights reserved.
+  </footer>
 </body>
 </html>
-
