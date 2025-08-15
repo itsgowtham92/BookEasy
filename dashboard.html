@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+  const auth = firebase.auth();
+
+  auth.onAuthStateChanged((user) => {
+    if (!user) {
+      alert("You must be logged in to view this page.");
+      window.location.href = "login.html";
+    }
+  });
+</script>
+
   <meta charset="UTF-8" />
   <title>Owner Dashboard</title>
   <link rel="stylesheet" href="style.css" />
@@ -30,4 +41,5 @@
   </script>
 </body>
 </html>
+
 
