@@ -1,45 +1,58 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>
-  const auth = firebase.auth();
-
-  auth.onAuthStateChanged((user) => {
-    if (!user) {
-      alert("You must be logged in to view this page.");
-      window.location.href = "login.html";
-    }
-  });
-</script>
-
   <meta charset="UTF-8" />
-  <title>Owner Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookEasy � Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; margin: 0; background: #f4f6f8; color: #333; }
+    header, footer { background: #2c3e50; color: white; text-align: center; padding: 1.5rem; }
+    main { max-width: 900px; margin: 2rem auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h2 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.75rem; border-bottom: 1px solid #ddd; text-align: left; }
+    th { background: #f0f0f0; }
+  </style>
 </head>
 <body>
-  <h1>Owner Listings</h1>
-  <ul id="listingList"></ul>
+  <header>
+    <h1>BookEasy</h1>
+    <p>Booking Dashboard</p>
+  </header>
 
-  <script>
-    const firebaseConfig = {
-      // paste your Firebase config here
-    };
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+  <main>
+    <h2>Upcoming Bookings</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Time Slot</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Ravi Kumar</td>
+          <td>2025-08-16</td>
+          <td>6:00 AM � 7:00 AM</td>
+          <td>ravi@example.com</td>
+        </tr>
+        <tr>
+          <td>Anjali Mehta</td>
+          <td>2025-08-16</td>
+          <td>7:00 AM � 8:00 AM</td>
+          <td>anjali@example.com</td>
+        </tr>
+        <!-- Add more rows dynamically -->
+      </tbody>
+    </table>
+  </main>
 
-    db.collection("owners").get().then(snapshot => {
-      const list = document.getElementById("listingList");
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const item = document.createElement("li");
-        item.textContent = `${data.business} - ${data.location}`;
-        list.appendChild(item);
-      });
-    });
-  </script>
+  <footer>
+    &copy; 2025 BookEasy. All rights reserved.
+  </footer>
 </body>
 </html>
-
-
